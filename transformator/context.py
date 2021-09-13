@@ -14,13 +14,24 @@ class cached_property(fn.cached_property):
 
 
 class Context:
-    def __init__(self):
+    def __init__(self, context_n_identifier="k", class_identifier="T"):
         self._ns = None
         self._class_constructor = None
         self._section_expressions = None
 
         self._active_class = None
         self._active_section = None
+
+        self._context_n_identifier = context_n_identifier
+        self._class_identifier = class_identifier
+
+    @property
+    def context_n_identifier(self):
+        return self._context_n_identifier
+
+    @property
+    def class_identifier(self):
+        return self._class_identifier
 
     @property
     def ns(self):
@@ -211,8 +222,8 @@ class Context:
 
     def eval_section_equation(self, equation, class_idx):
         ctx = {
-            "k": self.ns[class_idx],
-            "Ck": len(self.classes[class_idx]),
+            f"{self.context_n_identifier}": self.ns[class_idx],
+            f"{self.class_identifier}{self.context_n_identifier}": len(self.classes[class_idx]),
         }
         return eval(equation, ctx)
 
@@ -328,5 +339,5 @@ class Context:
 
             display(HTML(f"{class_idx},{section_idx},{part_idx}: {multiplier} * {len(trees)}"))
 
-            for tree in trees:
+            for i, tree in enumerate(trees):
                 gnb.sideBySide(tree, tree.extra["base"])
